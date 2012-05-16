@@ -1,0 +1,10 @@
+#!/bin/bash
+TARGET=/var/www/placemanul
+rm -rf $TARGET
+mkdir $TARGET
+cp placemanul.py $TARGET
+cp -r source/ $TARGET
+cp -r templates/ $TARGET
+mkdir $TARGET/static
+chgrp -R www-data $TARGET
+chmod 777 $TARGET/static
