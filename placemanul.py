@@ -4,13 +4,24 @@ import ImageOps
 import os.path
 import os
 import math
+import sys
 from random import Random
 
+testRun = os.getenv( "PLACEMANUL_TEST" )
+directoryRoot = "." if testRun else "/var/www/placemanul"
 urlRoot = ""
-sourceDir = "/var/www/placemanul/source/"
-cachedDir = "/var/www/placemanul/static/"
 
-render = web.template.render( "/var/www/placemanul/templates/" )
+sourceDir = directoryRoot + "/source/"
+cachedDir = directoryRoot + "/static/"
+templateDir = directoryRoot + "/templates/"
+
+if testRun:
+    print >> sys.stderr, "Directory root:", directoryRoot
+    print >> sys.stderr, "Source directory:", sourceDir
+    print >> sys.stderr, "Cached directory:", cachedDir
+    print >> sys.stderr, "Template directory:", templateDir
+
+render = web.template.render( templateDir )
 
 urls = (
     '/(attribution|index|about)/?', 'serve_page',
@@ -19,6 +30,8 @@ urls = (
 )
 
 def findfiles():
+    if testRun:
+        print >> sys.stderr, "sourceDir is still", sourceDir
     return os.listdir( sourceDir )
 
 def scanfile( filename ):
@@ -154,8 +167,11 @@ class index:
     def GET(self):
         return render.index( urlRoot )
 
-app = web.application(urls, globals(), autoreload = False)
-application = app.wsgifunc()
+if not testRun:
+    app = web.application(urls, globals(), autoreload = False)
+    application = app.wsgifunc()
+else:
+    app = web.application(urls, globals())
 
 if __name__ == "__main__":
     app.run()
