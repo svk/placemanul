@@ -222,14 +222,14 @@ def notfound():
 def internalerror():
     return web.internalerror( render.error( "internal server error" ) )
 
-app.notfound = notfound
-app.internalerror = internalerror
-
 if not testRun:
     app = web.application(urls, globals(), autoreload = False)
     application = app.wsgifunc()
 else:
     app = web.application(urls, globals())
+
+app.notfound = notfound
+app.internalerror = internalerror
 
 if __name__ == "__main__":
     app.run()
