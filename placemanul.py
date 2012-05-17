@@ -51,6 +51,9 @@ def select_random_manul( w, h ):
 def convert( srcimg, name, w, h, optionString, dstname ):
     srcw, srch = srcimg.size
     ratiow, ratioh = w/float(srcw), h/float(srch)
+    roi = None
+    if "kattungar" in name:
+        roi = ((238,15), (238+200,15+150))
     if ratiow != 1 and ratioh != 1:
         if ratioh > ratiow:
             desth = h
@@ -59,14 +62,31 @@ def convert( srcimg, name, w, h, optionString, dstname ):
             destw = w
             desth = int( math.ceil( srch * destw / float(srcw)) )
         srcimg = srcimg.resize( (destw,desth), Image.ANTIALIAS )
+        if roi:
+            (x0,y0), (x1,y1) = roi
+            x0 *= destw / float(srcw )
+            x1 *= destw / float(srcw )
+            y0 *= desth / float(srch )
+            y1 *= desth / float(srch )
+            roi = (x0,y0), (x1,y1)
         srcw, srch = destw, desth
     assert (srcw == w) or (srch == h)
     assert (srcw >=  w) and (srch >= h)
     if srcw > w:
-        pad = int( (srcw - w) / 2 )
+        if not roi:
+            pad = int( (srcw - w) / 2 )
+        else:
+            (x0,y0), (x1,y1) = roi
+            poix = (x0+x1)/2.0
+            pad = min( srcw - w, max(0, int(poix - w/2)) )
         srcimg = srcimg.crop( (pad,0,pad+w-1,h-1) )
     elif srch > h:
-        pad = int( (srch - h) / 2 )
+        if not roi:
+            pad = int( (srch - h) / 2 )
+        else:
+            (x0,y0), (x1,y1) = roi
+            poiy = (y0+y1)/2.0
+            pad = min( srch - h, max(0,int(poiy - h/2)) )
         srcimg = srcimg.crop( (0,pad,w-1,pad+h-1) )
     for option in optionString:
         if option == "g":

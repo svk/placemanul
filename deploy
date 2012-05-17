@@ -1,10 +1,16 @@
 #!/bin/bash
 TARGET=/var/www/placemanul
+VDISK=./manuls.image
+SIZE=100 # megabytes
+umount $TARGET/static
 rm -rf $TARGET
 mkdir $TARGET
 cp placemanul.py $TARGET
 cp -r source/ $TARGET
 cp -r templates/ $TARGET
 mkdir $TARGET/static
+dd if=/dev/zero of=$VDISK bs=1M count=$SIZE
+/sbin/mkfs -t ext3 $VDISK
+mount -o loop=/dev/loop0 $VDISK $TARGET/static
 chgrp -R www-data $TARGET
 chmod 777 $TARGET/static
