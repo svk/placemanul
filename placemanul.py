@@ -1,5 +1,6 @@
 import web
 import Image
+import ImageOps
 import os.path
 import os
 import math
@@ -12,12 +13,9 @@ cachedDir = "/var/www/placemanul/static/"
 render = web.template.render( "/var/www/placemanul/templates/" )
 
 urls = (
-    '/([^\/]+)/([0-9]+)/([0-9]+)/?', 'serve_image',
-    '/([0-9]+)/([0-9]+)/?', 'serve_image',
-    '/([^\/]+)/([0-9]+)/?', 'serve_image',
-    '/([0-9]+)/?', 'serve_image',
-    '/([a-z]+)/?', 'serve_page',
-    '/?', 'index'
+    '/(attribution|index|about)/?', 'serve_page',
+    '/?', 'index',
+    '/(.+)', 'serve_image',
 )
 
 def findfiles():
@@ -29,8 +27,17 @@ def scanfile( filename ):
 
 manuls = [ scanfile( m ) for m in findfiles() ]
 
-def filename( name, w, h ):
-    return "%s-%dx%d.jpeg" % (name, w, h)
+def map_option( option ):
+    if option in ("grayscale", "gray", "greyscale", "grey", "g"):
+        return "g"
+    if option in ("sepia", "s"):
+        return "s"
+    if option in ("negative", "n"):
+        return "n"
+    return None
+
+def filename( name, w, h, optionString ):
+    return "%s-%s-%dx%d.jpeg" % (name, optionString, w, h)
 
 def select_random_manul( w, h ):
     aspect = w / float(h)
@@ -41,7 +48,7 @@ def select_random_manul( w, h ):
         return None
     return r.choice( sorted( m, key = lambda (_,(w,h)): abs(w/float(h) - aspect) )[:n] )
 
-def convert( srcimg, name, w, h, dstname ):
+def convert( srcimg, name, w, h, optionString, dstname ):
     srcw, srch = srcimg.size
     ratiow, ratioh = w/float(srcw), h/float(srch)
     if ratiow != 1 and ratioh != 1:
@@ -61,23 +68,52 @@ def convert( srcimg, name, w, h, dstname ):
     elif srch > h:
         pad = int( (srch - h) / 2 )
         srcimg = srcimg.crop( (0,pad,w-1,pad+h-1) )
+    for option in optionString:
+        if option == "g":
+            ImageOps.grayscale( srcimg )
+        elif option == "n":
+            ImageOps.negative( srcimg )
+        elif option == "s":
+            sepia = 0xff, 0xf0, 0xc0
+            srcimg = srcimg.convert( "L" )
+            srcimg.putpalette( [ int( (i/3/255.0) * sepia[i%3] ) for i in range(256*3) ] )
+            srcimg = srcimg.convert( "RGB" )
     # todo locking, write to temp and then copy
     srcimg.save( dstname )
     return True
     
 class serve_image:        
-    def GET(self, options = None, w = None, h = None):
-        if h == None and (not type(options) == str):
-            w, h = options, w
-        w = int( w or 640 )
-        h = int( h or w )
+    def GET(self, optionsConcatenated):
+        wh = []
+        specificId = None
+        optionList = []
+        for option in optionsConcatenated.split("/"):
+            if not option:
+                continue
+            if option.isdigit():
+                wh.append( int(option) )
+            elif option.startswith("m"):
+                specificId = int( option[1:] )
+            else:
+                optionList.append( option )
+        if len( wh ) == 0:
+            w = h = 640
+        elif len( wh ) == 1:
+            w = h =  wh[0]
+        else:
+            assert len( wh ) == 2
+            w, h = wh
+        optionString = "".join( map( map_option, optionList ) )
         try:
-            srcname, _ = select_random_manul( w, h )
+            if not specificId:
+                srcname, _ = select_random_manul( w, h )
+            else:
+                srcname, _ = manuls[ specificId - 1 ]
         except:
             return "Oops! (no manul large enough)"
-        fn = filename( srcname, w, h )
+        fn = filename( srcname, w, h, optionString )
         if not os.path.exists( cachedDir + fn ):
-            convert( Image.open( sourceDir + srcname ), srcname, w, h, cachedDir + fn )
+            convert( Image.open( sourceDir + srcname ), srcname, w, h, optionString, cachedDir + fn )
         try:
             with open( cachedDir + fn, "rb" ) as f:
                 data = f.read()
