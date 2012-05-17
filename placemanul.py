@@ -25,7 +25,8 @@ if testRun:
 render = web.template.render( templateDir )
 
 urls = (
-    '/(attribution|index|about)/?', 'serve_page',
+    '/(index)/?', 'serve_page',
+    '/(gallery|attribution)/?', 'serve_gallery',
     '/?', 'index',
     '/(.+)', 'serve_image',
 )
@@ -186,12 +187,23 @@ class serve_image:
         except:
             return "Oops!"
 
+def render_gallery_entry( key ):
+    manul = manuls[key]
+    showWidth = 300
+    showHeight = 300
+    url = "%s/m%d/%d/%d" % (urlRoot, key, showWidth, showHeight )
+    desc = "Picture of a manul by %s" % manul.author
+    return unicode(render.gallery_entry( key, url, desc, manul.author, manul.license, manul.attribution_link, manul.width, manul.height ))
+
+class serve_gallery:
+    def GET(self, *args, **kwargs):
+        return render.gallery( "\n".join( map( render_gallery_entry, manuls.keys() ) ) )
+
 class serve_page:
     def GET(self, name, *args, **kwargs):
         kwargs = {}
         return {
-            'index': render.index,
-            'about': render.about
+            'index': render.index
         }[ name ]( urlRoot, *args, **kwargs )
 
 class index:
