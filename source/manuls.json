@@ -1,0 +1,18 @@
+{
+    "1": {
+        "image": "Manul2.jpg",
+        "attribution_link": "https://commons.wikimedia.org/wiki/File:Manul2.jpg",
+        "author": "Karin Sturzenegger",
+        "license": "GNU Free Documentation License",
+        "size": [ 1920, 2560 ],
+        "region": [ [676, 800], [820,584] ]
+    },
+    "2": {
+        "image": "pallaskattungar-2.jpg",
+        "attribution_link": "https://commons.wikimedia.org/wiki/File:Manul2.jpg",
+        "author": "Parken Zoo",
+        "license": "Fri för publicering (Free for publication)",
+        "size": [ 800, 644 ],
+        "region": [ [238, 15], [200,150] ]
+    }
+}

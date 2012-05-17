@@ -5,6 +5,7 @@ import os.path
 import os
 import math
 import sys
+import json
 from random import Random
 
 testRun = os.getenv( "PLACEMANUL_TEST" )
@@ -29,16 +30,47 @@ urls = (
     '/(.+)', 'serve_image',
 )
 
+class Manul:
+    def __init__(self, number = None, filename = None, author = "", license = "", attribution_link = "", nominal_size = None, region = None):
+        assert number
+        assert filename
+        self.number = int(number)
+        self.filename = filename
+        self.author = author
+        self.license = license
+        self.attribution_link = attribution_link
+        self.region = region
+        self.nominal_size = nominal_size
+        img = Image.open( sourceDir + filename )
+        self.actual_size = ax, ay = img.size
+        if nominal_size and region:
+            nx, ny = nominal_size
+            wr, hr = ax/float(nx), ay/float(ny)
+            ((rx,ry),(rw,rh)) = self.region
+            rx *= wr
+            ry *= hr
+            rw *= wr
+            rh *= hr
+            self.region = ((rx,ry),(rx+rw-1,ry+rh-1))
+        self.width, self.height = self.actual_size
+        self.aspect = self.width / float( self.height )
+
+def loadManul( key, j ):
+    return Manul( number = int(key),
+                  filename = j[u"image"],
+                  author = j.get(u"author") or "",
+                  attribution_link = j.get(u"attribution_link") or "",
+                  license = j.get(u"license") or "",
+                  nominal_size = j.get(u"size"),
+                  region = j.get(u"region") )
+
 def findfiles():
-    if testRun:
-        print >> sys.stderr, "sourceDir is still", sourceDir
-    return os.listdir( sourceDir )
+    jsonFile = sourceDir + "manuls.json"
+    with open( jsonFile, "r" ) as f:
+        rv = [ loadManul( key, record ) for key, record in json.load( f ).items() ]
+    return dict( map( lambda r : (r.number, r), rv ) )
 
-def scanfile( filename ):
-    img = Image.open( sourceDir + filename )
-    return filename, img.size
-
-manuls = [ scanfile( m ) for m in findfiles() ]
+manuls = findfiles()
 
 def map_option( option ):
     if option in ("grayscale", "gray", "greyscale", "grey", "g"):
@@ -56,17 +88,16 @@ def select_random_manul( w, h ):
     aspect = w / float(h)
     n = 5
     r = Random( (w,h,11) )
-    m = [ (name,(w_, h_)) for (name, (w_,h_)) in manuls if w_ >= w and h_ >= h ]
+    m = [ m for m in manuls.values() if m.width >= w and m.height >= h ]
     if not m:
         return None
-    return r.choice( sorted( m, key = lambda (_,(w,h)): abs(w/float(h) - aspect) )[:n] )
+    return r.choice( sorted( m, key = lambda manul: abs(manul.aspect - aspect) )[:n] )
 
-def convert( srcimg, name, w, h, optionString, dstname ):
+def convert( srcimg, manul, w, h, optionString, dstname ):
+    name = manul.filename
     srcw, srch = srcimg.size
     ratiow, ratioh = w/float(srcw), h/float(srch)
-    roi = None
-    if "kattungar" in name:
-        roi = ((238,15), (238+200,15+150))
+    roi = manul.region
     if ratiow != 1 and ratioh != 1:
         if ratioh > ratiow:
             desth = h
@@ -139,14 +170,14 @@ class serve_image:
         optionString = "".join( map( map_option, optionList ) )
         try:
             if not specificId:
-                srcname, _ = select_random_manul( w, h )
+                manul = select_random_manul( w, h )
             else:
-                srcname, _ = manuls[ specificId - 1 ]
+                manul = manuls[ specificId ]
         except:
             return "Oops! (no manul large enough)"
-        fn = filename( srcname, w, h, optionString )
+        fn = filename( manul.filename, w, h, optionString )
         if not os.path.exists( cachedDir + fn ):
-            convert( Image.open( sourceDir + srcname ), srcname, w, h, optionString, cachedDir + fn )
+            convert( Image.open( sourceDir + manul.filename ), manul, w, h, optionString, cachedDir + fn )
         try:
             with open( cachedDir + fn, "rb" ) as f:
                 data = f.read()
