@@ -70,9 +70,9 @@ def convert( srcimg, name, w, h, optionString, dstname ):
         srcimg = srcimg.crop( (0,pad,w-1,pad+h-1) )
     for option in optionString:
         if option == "g":
-            ImageOps.grayscale( srcimg )
+            srcimg = ImageOps.grayscale( srcimg )
         elif option == "n":
-            ImageOps.negative( srcimg )
+            srcimg = ImageOps.invert( srcimg )
         elif option == "s":
             sepia = 0xff, 0xf0, 0xc0
             srcimg = srcimg.convert( "L" )
