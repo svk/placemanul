@@ -142,6 +142,14 @@
         "license": "CC BY 2.0",
         "size": [ 1600, 1001 ],
         "region": [ [918, 159 ], [570, 570] ]
+    },
+    "19": {
+        "image": "FelisManul.jpg",
+        "attribution_link": "https://commons.wikimedia.org/wiki/File:Manul_%28Felis_Manul%29.jpg",
+        "author": "Mich77",
+        "license": "GNU Free Documentation License",
+        "size": [ 1000, 750 ],
+        "region": [ [333, 50 ], [333, 400] ]
     }
 }
 
