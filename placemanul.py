@@ -6,6 +6,7 @@ import os
 import math
 import sys
 import json
+import datetime
 from random import Random
 
 testRun = os.getenv( "PLACEMANUL_TEST" )
@@ -171,7 +172,7 @@ class serve_image:
                 w, h = wh
             optionString = "".join( map( map_option, optionList ) )
         except:
-            return render.error( "error parsing arguments" )
+            raise web.internalerror( render.error( "error parsing arguments" ) )
         try:
             if not specificId:
                 manul = select_random_manul( w, h )
@@ -180,21 +181,24 @@ class serve_image:
             fn = filename( manul.filename, w, h, optionString )
         except:
             if specificId:
-                return render.error( "manul not found" )
+                raise web.internalerror( render.error( "manul not found" ) )
             else:
-                return render.error( "manul not found (requested resolution may be too high)" )
+                raise web.internalerror( render.error( "manul not found (requested resolution may be too high)" ) )
         try:
             if not os.path.exists( cachedDir + fn ):
                 convert( Image.open( sourceDir + manul.filename ), manul, w, h, optionString, cachedDir + fn )
         except:
-            return render.error( "error processing manul" )
-        try:
-            with open( cachedDir + fn, "rb" ) as f:
-                data = f.read()
-                web.header( "Content-Type", "image/jpeg" )
-                return data
-        except:
-            return render.error( "error retrieving manul" )
+            raise web.internalerror( render.error( "error processing manul" ) )
+        path = cachedDir + fn
+        mtime = os.stat( path ).st_mtime
+        if web.http.modified( date = datetime.datetime.fromtimestamp(mtime) ): 
+            try:
+                with open( path, "rb" ) as f:
+                    data = f.read()
+                    web.header( "Content-Type", "image/jpeg" )
+                    return data
+            except:
+                raise web.internalerror( render.error( "error retrieving manul" ) )
 
 def render_gallery_entry( key ):
     manul = manuls[key]
