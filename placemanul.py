@@ -149,37 +149,40 @@ def convert( srcimg, manul, w, h, optionString, dstname ):
     
 class serve_image:        
     def GET(self, optionsConcatenated):
-        wh = []
-        specificId = None
-        optionList = []
-        for option in optionsConcatenated.split("/"):
-            if not option:
-                continue
-            if option.isdigit():
-                wh.append( int(option) )
-            elif option.startswith("m"):
-                specificId = int( option[1:] )
+        try:
+            wh = []
+            specificId = None
+            optionList = []
+            for option in optionsConcatenated.split("/"):
+                if not option:
+                    continue
+                if option.isdigit():
+                    wh.append( int(option) )
+                elif option.startswith("m"):
+                    specificId = int( option[1:] )
+                else:
+                    optionList.append( option )
+            if len( wh ) == 0:
+                w = h = 640
+            elif len( wh ) == 1:
+                w = h =  wh[0]
             else:
-                optionList.append( option )
-        if len( wh ) == 0:
-            w = h = 640
-        elif len( wh ) == 1:
-            w = h =  wh[0]
-        else:
-            assert len( wh ) == 2
-            w, h = wh
-        optionString = "".join( map( map_option, optionList ) )
+                assert len( wh ) == 2
+                w, h = wh
+            optionString = "".join( map( map_option, optionList ) )
+        except:
+            return render.error( "error parsing arguments" )
         try:
             if not specificId:
                 manul = select_random_manul( w, h )
             else:
                 manul = manuls[ specificId ]
+            fn = filename( manul.filename, w, h, optionString )
         except:
             if specificId:
                 return render.error( "manul not found" )
             else:
                 return render.error( "manul not found (requested resolution may be too high)" )
-        fn = filename( manul.filename, w, h, optionString )
         try:
             if not os.path.exists( cachedDir + fn ):
                 convert( Image.open( sourceDir + manul.filename ), manul, w, h, optionString, cachedDir + fn )
