@@ -1,7 +1,10 @@
 #!/bin/bash
 TARGET=/var/www/placemanul
 VDISK=./manuls.image
+TEMP_STATIC=/tmp/static.temporary
 SIZE=100 # megabytes
+mkdir $TEMP_STATIC
+cp $TARGET/static/* $TEMP_STATIC
 umount $TARGET/static
 rm -rf $TARGET
 mkdir $TARGET
@@ -12,6 +15,8 @@ mkdir $TARGET/static
 dd if=/dev/zero of=$VDISK bs=1M count=$SIZE
 /sbin/mkfs -t ext3 $VDISK
 mount -o loop=/dev/loop0 $VDISK $TARGET/static
+cp -r $TEMP_STATIC/* $TARGET/static
+rm -rf $TEMP_STATIC
 cp -r static-files/* $TARGET/static
 chgrp -R www-data $TARGET
 chmod 777 $TARGET/static
