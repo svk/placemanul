@@ -14,7 +14,7 @@
         "license": "CC BY 3.0",
         "size": [ 800, 644 ],
         "region": [ [238, 15], [200,150] ]
-    }
+    },
     "3": {
         "image": "3.jpg",
         "attribution_link": "http://www.flickr.com/photos/lincolnlog/3659891965/",
@@ -22,7 +22,7 @@
         "license": "CC BY 2.0",
         "size": [ 537, 303 ],
         "region": [ [58, 43 ], [210, 110] ]
-    }
+    },
     "4": {
         "image": "4.jpg",
         "attribution_link": "http://www.flickr.com/photos/lincolnlog/5126528481/",
@@ -30,15 +30,15 @@
         "license": "CC BY 2.0",
         "size": [ 1600, 1200 ],
         "region": [ [318, 240], [858, 676] ]
-    }
+    },
     "5": {
         "image": "5.jpg",
         "attribution_link": "http://www.flickr.com/photos/lincolnlog/5126529235/",
         "author": "Richie Graham",
         "license": "CC BY 2.0",
         "size": [ 1600, 1200 ],
-        "region": [ [368}, 334 ], [468, 388] ]
-    }
+        "region": [ [368, 334 ], [468, 388] ]
+    },
     "6": {
         "image": "6.jpg",
         "attribution_link": "http://www.flickr.com/photos/lincolnlog/5126529641/",
@@ -46,7 +46,7 @@
         "license": "CC BY 2.0",
         "size": [ 1600, 1200 ],
         "region": [ [492, 292 ], [530, 445] ]
-    }
+    },
     "7": {
         "image": "7.jpg",
         "attribution_link": "http://www.flickr.com/photos/lincolnlog/5127132330/",
@@ -54,7 +54,7 @@
         "license": "CC BY 2.0",
         "size": [ 1600, 1200 ],
         "region": [ [468, 242 ], [828, 616] ]
-    }
+    },
     "8": {
         "image": "8.jpg",
         "attribution_link": "http://www.flickr.com/photos/jinterwas/5216168778/",
@@ -62,7 +62,7 @@
         "license": "CC BY 2.0",
         "size": [ 1500, 1000 ],
         "region": [ [350, 120 ], [624, 598] ]
-    }
+    },
     "9": {
         "image": "9.jpg",
         "attribution_link": "http://www.flickr.com/photos/jinterwas/5221190564/",
@@ -70,7 +70,7 @@
         "license": "CC BY 2.0",
         "size": [ 1200, 1200 ],
         "region": [ [278, 240 ], [904, 850] ]
-    }
+    },
     "10": {
         "image": "10.jpg",
         "attribution_link": "http://www.flickr.com/photos/jinterwas/5221190726/",
@@ -78,7 +78,7 @@
         "license": "CC BY 2.0",
         "size": [ 1500, 1000 ],
         "region": [ [893, 510 ], [238, 215] ]
-    }
+    },
     "11": {
         "image": "11.jpg",
         "attribution_link": "http://www.flickr.com/photos/edenpictures/6786913269/",
@@ -86,6 +86,7 @@
         "license": "CC BY 2.0",
         "size": [ 1600, 1200 ],
         "region": [ [772, 74 ], [578, 520] ]
+    },
     "12": {
         "image": "12.jpg",
         "attribution_link": "http://www.flickr.com/photos/bontempscharly/6807737406/",
@@ -93,7 +94,7 @@
         "license": "CC BY 2.0",
         "size": [ 1600, 1117 ],
         "region": [ [664, 156 ], [340, 330] ]
-    }
+    },
     "13": {
         "image": "13.jpg",
         "attribution_link": "http://www.flickr.com/photos/bontempscharly/6900533945/",
@@ -101,7 +102,7 @@
         "license": "CC BY 2.0",
         "size": [ 1600, 1598 ],
         "region": [ [460, 300 ], [663, 516] ]
-    }
+    },
     "14": {
         "image": "14.jpg",
         "attribution_link": "http://www.flickr.com/photos/bontempscharly/6900542935/",
@@ -109,7 +110,7 @@
         "license": "CC BY 2.0",
         "size": [ 1600, 1067 ],
         "region": [ [956, 402 ], [574, 386] ]
-    }
+    },
     "15": {
         "image": "15.jpg",
         "attribution_link": "http://www.flickr.com/photos/bontempscharly/6900543365/",
@@ -117,7 +118,7 @@
         "license": "CC BY 2.0",
         "size": [ 1600, 1067 ],
         "region": [ [278, 140 ], [422, 354] ]
-    }
+    },
     "16": {
         "image": "16.jpg",
         "attribution_link": "http://www.flickr.com/photos/bontempscharly/6943103448/",
@@ -125,7 +126,7 @@
         "license": "CC BY 2.0",
         "size": [ 1600, 1068 ],
         "region": [ [316, 152 ], [398, 332] ]
-    }
+    },
     "17": {
         "image": "17.jpg",
         "attribution_link": "http://www.flickr.com/photos/bontempscharly/6953844957/",
@@ -133,7 +134,7 @@
         "license": "CC BY 2.0",
         "size": [ 1066, 1600 ],
         "region": [ [338, 375 ], [240, 240] ]
-    }
+    },
     "18": {
         "image": "18.jpg",
         "attribution_link": "http://www.flickr.com/photos/bontempscharly/6953848237/",
@@ -142,7 +143,6 @@
         "size": [ 1600, 1001 ],
         "region": [ [918, 159 ], [570, 570] ]
     }
-
 }
 
 
