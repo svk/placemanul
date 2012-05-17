@@ -149,43 +149,52 @@ def convert( srcimg, manul, w, h, optionString, dstname ):
     
 class serve_image:        
     def GET(self, optionsConcatenated):
-        wh = []
-        specificId = None
-        optionList = []
-        for option in optionsConcatenated.split("/"):
-            if not option:
-                continue
-            if option.isdigit():
-                wh.append( int(option) )
-            elif option.startswith("m"):
-                specificId = int( option[1:] )
+        try:
+            wh = []
+            specificId = None
+            optionList = []
+            for option in optionsConcatenated.split("/"):
+                if not option:
+                    continue
+                if option.isdigit():
+                    wh.append( int(option) )
+                elif option.startswith("m"):
+                    specificId = int( option[1:] )
+                else:
+                    optionList.append( option )
+            if len( wh ) == 0:
+                w = h = 640
+            elif len( wh ) == 1:
+                w = h =  wh[0]
             else:
-                optionList.append( option )
-        if len( wh ) == 0:
-            w = h = 640
-        elif len( wh ) == 1:
-            w = h =  wh[0]
-        else:
-            assert len( wh ) == 2
-            w, h = wh
-        optionString = "".join( map( map_option, optionList ) )
+                assert len( wh ) == 2
+                w, h = wh
+            optionString = "".join( map( map_option, optionList ) )
+        except:
+            return render.error( "error parsing arguments" )
         try:
             if not specificId:
                 manul = select_random_manul( w, h )
             else:
                 manul = manuls[ specificId ]
+            fn = filename( manul.filename, w, h, optionString )
         except:
-            return "Oops! (no manul large enough)"
-        fn = filename( manul.filename, w, h, optionString )
-        if not os.path.exists( cachedDir + fn ):
-            convert( Image.open( sourceDir + manul.filename ), manul, w, h, optionString, cachedDir + fn )
+            if specificId:
+                return render.error( "manul not found" )
+            else:
+                return render.error( "manul not found (requested resolution may be too high)" )
+        try:
+            if not os.path.exists( cachedDir + fn ):
+                convert( Image.open( sourceDir + manul.filename ), manul, w, h, optionString, cachedDir + fn )
+        except:
+            return render.error( "error processing manul" )
         try:
             with open( cachedDir + fn, "rb" ) as f:
                 data = f.read()
                 web.header( "Content-Type", "image/jpeg" )
                 return data
         except:
-            return "Oops!"
+            return render.error( "error retrieving manul" )
 
 def render_gallery_entry( key ):
     manul = manuls[key]
@@ -210,11 +219,20 @@ class index:
     def GET(self):
         return render.index( urlRoot )
 
+def notfound():
+    return web.notfound( render.error( "page not found" ) )
+
+def internalerror():
+    return web.internalerror( render.error( "internal server error" ) )
+
 if not testRun:
     app = web.application(urls, globals(), autoreload = False)
     application = app.wsgifunc()
 else:
     app = web.application(urls, globals())
+
+app.notfound = notfound
+app.internalerror = internalerror
 
 if __name__ == "__main__":
     app.run()
