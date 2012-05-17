@@ -157,6 +157,14 @@
         "author": "Winkelbohrer",
         "license": "CC BY SA 2.0",
         "size": [ 1024, 685 ]
+    },
+    "21": {
+        "image": "ShyCat.jpg",
+        "attribution_link": "http://www.flickr.com/photos/40803964@N08/4519098234",
+        "author": "Sander van der Wel",
+        "license": "CC BY SA 2.0",
+        "size": [ 1024, 1024 ],
+        "region" : [ [ 150, 230 ], [300,300] ]
     }
 }
 
