@@ -197,7 +197,7 @@ def render_gallery_entry( key ):
 
 class serve_gallery:
     def GET(self, *args, **kwargs):
-        return render.gallery( "\n".join( map( render_gallery_entry, manuls.keys() ) ) )
+        return render.gallery( map( render_gallery_entry, manuls.keys() ) )
 
 class serve_page:
     def GET(self, name, *args, **kwargs):
