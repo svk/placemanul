@@ -1,0 +1,17 @@
+#!/bin/bash
+TARGET=./test-placemanul
+TEMP_STATIC=/tmp/static.temporary
+SIZE=100 # megabytes
+mkdir $TEMP_STATIC
+cp $TARGET/static/* $TEMP_STATIC
+rm -rf $TARGET
+mkdir $TARGET
+cp placemanul.py $TARGET
+cp -r source/ $TARGET
+cp -r templates/ $TARGET
+mkdir $TARGET/static
+cp -r $TEMP_STATIC/* $TARGET/static
+rm -rf $TEMP_STATIC
+cp -r static-files/* $TARGET/static
+chmod 777 $TARGET/static
+tar cvfz test-placemanul.tar.gz $TARGET
