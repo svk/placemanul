@@ -175,17 +175,23 @@ class serve_image:
             else:
                 manul = manuls[ specificId ]
         except:
-            return "Oops! (no manul large enough)"
+            if specificId:
+                return render.error( "manul not found" )
+            else:
+                return render.error( "manul not found (requested resolution may be too high)" )
         fn = filename( manul.filename, w, h, optionString )
-        if not os.path.exists( cachedDir + fn ):
-            convert( Image.open( sourceDir + manul.filename ), manul, w, h, optionString, cachedDir + fn )
+        try:
+            if not os.path.exists( cachedDir + fn ):
+                convert( Image.open( sourceDir + manul.filename ), manul, w, h, optionString, cachedDir + fn )
+        except:
+            return render.error( "error processing manul" )
         try:
             with open( cachedDir + fn, "rb" ) as f:
                 data = f.read()
                 web.header( "Content-Type", "image/jpeg" )
                 return data
         except:
-            return "Oops!"
+            return render.error( "error retrieving manul" )
 
 def render_gallery_entry( key ):
     manul = manuls[key]
@@ -209,6 +215,15 @@ class serve_page:
 class index:
     def GET(self):
         return render.index( urlRoot )
+
+def notfound():
+    return web.notfound( render.error( "page not found" ) )
+
+def internalerror():
+    return web.internalerror( render.error( "internal server error" ) )
+
+app.notfound = notfound
+app.internalerror = internalerror
 
 if not testRun:
     app = web.application(urls, globals(), autoreload = False)
