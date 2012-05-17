@@ -33,7 +33,7 @@ urls = (
 )
 
 class Manul:
-    def __init__(self, number = None, filename = None, author = "", license = "", attribution_link = "", nominal_size = None, region = None):
+    def __init__(self, number = None, filename = None, author = "", license = "", attribution_link = "", nominal_size = None, region = None, actual_size = None):
         assert number
         assert filename
         self.number = int(number)
@@ -41,10 +41,14 @@ class Manul:
         self.author = author
         self.license = license
         self.attribution_link = attribution_link
-        self.region = region
+        self.untransformed_region = self.region = region
         self.nominal_size = nominal_size
-        img = Image.open( sourceDir + filename )
-        self.actual_size = ax, ay = img.size
+        if actual_size:
+            self.actual_size = actual_size
+        else:
+            img = Image.open( sourceDir + filename )
+            self.actual_size = img.size
+        ax, ay = self.actual_size
         if nominal_size and region:
             nx, ny = nominal_size
             wr, hr = ax/float(nx), ay/float(ny)
@@ -56,6 +60,16 @@ class Manul:
             self.region = ((rx,ry),(rx+rw-1,ry+rh-1))
         self.width, self.height = self.actual_size
         self.aspect = self.width / float( self.height )
+    def encode(self):
+        return {
+            u"image": self.filename,
+            u"author": self.author,
+            u"attribution_link": self.attribution_link,
+            u"license": self.license,
+            u"size": self.nominal_size,
+            u"region": self.untransformed_region,
+            u"actual_size": self.actual_size
+        }
 
 def loadManul( key, j ):
     return Manul( number = int(key),
@@ -64,15 +78,14 @@ def loadManul( key, j ):
                   attribution_link = j.get(u"attribution_link") or "",
                   license = j.get(u"license") or "",
                   nominal_size = j.get(u"size"),
-                  region = j.get(u"region") )
+                  region = j.get(u"region"),
+                  actual_size = j.get(u"actual_size") )
 
-def findfiles():
-    jsonFile = sourceDir + "manuls.json"
+def findfiles( jsonFile = None ):
+    jsonFile = jsonFile or (sourceDir + "manuls.json")
     with open( jsonFile, "r" ) as f:
         rv = [ loadManul( key, record ) for key, record in json.load( f ).items() ]
     return dict( map( lambda r : (r.number, r), rv ) )
-
-manuls = findfiles()
 
 def map_option( option ):
     if option in ("grayscale", "gray", "greyscale", "grey", "g"):
@@ -86,7 +99,7 @@ def map_option( option ):
 def filename( name, w, h, optionString ):
     return "%s-%s-%dx%d.jpeg" % (name, optionString, w, h)
 
-def select_random_manul( w, h ):
+def select_random_manul( manuls, w, h ):
     aspect = w / float(h)
     n = 5
     r = Random( (w,h,11) )
@@ -175,9 +188,9 @@ class serve_image:
             raise web.internalerror( render.error( "error parsing arguments" ) )
         try:
             if not specificId:
-                manul = select_random_manul( w, h )
+                manul = select_random_manul( findfiles(), w, h )
             else:
-                manul = manuls[ specificId ]
+                manul = findfiles()[ specificId ]
             fn = filename( manul.filename, w, h, optionString )
         except:
             if specificId:
@@ -200,8 +213,8 @@ class serve_image:
             except:
                 raise web.internalerror( render.error( "error retrieving manul" ) )
 
-def render_gallery_entry( key ):
-    manul = manuls[key]
+def render_gallery_entry( keyvalue ):
+    key, manul = keyvalue
     showWidth = 300
     showHeight = 300
     url = "%s/m%d/%d/%d" % (urlRoot, key, showWidth, showHeight )
@@ -210,7 +223,7 @@ def render_gallery_entry( key ):
 
 class serve_gallery:
     def GET(self, *args, **kwargs):
-        return render.gallery( map( render_gallery_entry, manuls.keys() ) )
+        return render.gallery( map( render_gallery_entry, findfiles().items() ) )
 
 class serve_page:
     def GET(self, name, *args, **kwargs):
