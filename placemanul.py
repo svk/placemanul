@@ -26,8 +26,8 @@ if testRun:
 render = web.template.render( templateDir )
 
 urls = (
-    '/(index)/?', 'serve_page',
-    '/(gallery|attribution)/?', 'serve_gallery',
+    '/(index|about)(?:/|\.html?)?', 'serve_page',
+    '/(gallery|attribution)(?:/|\.html?)?', 'serve_gallery',
     '/?', 'index',
     '/(.+)', 'serve_image',
 )
@@ -229,7 +229,8 @@ class serve_page:
     def GET(self, name, *args, **kwargs):
         kwargs = {}
         return {
-            'index': render.index
+            'index': render.index,
+            'about': render.about
         }[ name ]( urlRoot, *args, **kwargs )
 
 class index:
