@@ -215,8 +215,8 @@ class serve_image:
 
 def render_gallery_entry( keyvalue ):
     key, manul = keyvalue
-    showWidth = 300
-    showHeight = 300
+    showWidth = 430
+    showHeight = 220
     url = "%s/m%d/%d/%d" % (urlRoot, key, showWidth, showHeight )
     desc = "Picture of a manul by %s" % manul.author
     return unicode(render.gallery_entry( key, url, desc, manul.author, manul.license, manul.attribution_link, manul.width, manul.height ))
