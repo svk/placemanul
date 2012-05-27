@@ -3,9 +3,10 @@ $def with (error_message)
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<link href='http://fonts.googleapis.com/css?family=Cantata+One' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="http://static.placemanul.com/reset.css" type="text/css" />
 <link rel="stylesheet" href="http://static.placemanul.com/style.css" type="text/css" />
+<link href='http://fonts.googleapis.com/css?family=Cabin|Lobster' rel='stylesheet' type='text/css'>
+
 <title>placemanul</title>
 <script type="text/javascript">
 
@@ -23,16 +24,28 @@ $def with (error_message)
 </head>
 <body>
 
-<div id="wrapper404">
-<img src="http://static.placemanul.com/404manul.jpg">
-<h2>ERROR!</h2>
-<div class="code">$error_message</div>
-<p>You have angered the manul. You can bask in its glory, or return to the <a href="/">main page</a>.
+	<div id="wrapper">
+		<div id="header">
+			<a href="index.html"><h1>placemanul</h1></a>
+			<ul id="nav">
+					<li><a href="index.html">Home</a></li>
+					<li><a href="gallery.html">The manuls</a></li>
+					<li><a href="about.html">About</a></li>
+				</ul>
+		</div>
 
-</div>
-
-  
-            
-</div>
+		<div id="middle">
+			<div id="text">
+				<h2>Something went terribly wrong:</h2>
+					<p>$error_message</p>
+					<p>You have angered the manul. You can bask in its glory, or return to the <a href="/">main page</a>.
+			</div>
+				<div id="picture">
+					<img src="http://static.placemanul.com/404manul.jpg">
+				</div>
+		
+		</div>
+	</div>
 
 </body>
+</html>
